@@ -1,0 +1,5 @@
+Django==3.2.12
+pandas==1.3.3
+
+
+pip install pywin32 PyMuPDF python-docx Pillow html2docx mysqlclient django-cors-headers Django pandas

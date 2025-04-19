@@ -1,0 +1,63 @@
+CREATE DATABASE Docx;
+USE Docx;
+
+-- 创建用户表
+CREATE TABLE user (
+    id INT AUTO_INCREMENT PRIMARY KEY,                -- 用户ID，自增主键
+    username VARCHAR(50) NOT NULL,                     -- 用户名，不可为空
+    password VARCHAR(100) NOT NULL,                    -- 密码，不可为空
+    phone VARCHAR(15) NULL,                            -- 电话号码，可为空
+    role VARCHAR(20) NOT NULL,                         -- 用户角色，不可为空
+    birth_date DATE NOT NULL,                          -- 出生日期，不可为空
+    name VARCHAR(50) NOT NULL
+    sex INT NOT NULL                                   -- 性别，不可为空
+);
+CREATE TABLE Project (
+    id INT PRIMARY KEY AUTO_INCREMENT,               -- 项目 ID，自增主键
+    name VARCHAR(100) NOT NULL,                      -- 项目名称
+    folder_path VARCHAR(255) NOT NULL,               -- 文件夹路径
+    directory_image_url VARCHAR(255),                -- 项目目录图片 URL
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,  -- 创建时间，默认当前时间
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,  -- 更新时间
+    user_id INT,                                    -- 项目管理员 ID（外键）
+
+    -- 定义外键，指向管理员表的 ID
+    FOREIGN KEY (user_id) REFERENCES Admin(id)
+);
+CREATE TABLE file (
+    id INT AUTO_INCREMENT PRIMARY KEY,          -- 自增的主键
+    name VARCHAR(255) NOT NULL,                 -- 文件名
+    file_url VARCHAR(255) NOT NULL,             -- 文件 URL
+    file_path VARCHAR(255) NOT NULL,            -- 文件路径
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,  -- 创建时间，默认当前时间
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, -- 更新时间，默认当前时间并在更新时自动修改
+    user_id INT,                               -- 上传用户的 ID
+    FOREIGN KEY (user_id) REFERENCES user(id)   -- 外键，关联到用户表的 id
+);
+-- 添加 'id' 列到 'file_project_association' 表
+CREATE TABLE file_project_association (
+    id INT AUTO_INCREMENT PRIMARY KEY,         -- 添加自增主键
+    file_id INT,                               -- 文件 ID
+    project_id INT,                            -- 项目 ID
+    FOREIGN KEY (file_id) REFERENCES file(id) ON DELETE CASCADE,  -- 外键关联文件表
+    FOREIGN KEY (project_id) REFERENCES project(id) ON DELETE CASCADE  -- 外键关联项目表
+);
+
+-- 添加 'id' 列到 'project_user_association' 表
+CREATE TABLE project_user_association (
+    id INT AUTO_INCREMENT PRIMARY KEY,         -- 添加自增主键
+    project_id INT,                            -- 项目 ID
+    user_id INT,                               -- 用户 ID
+    FOREIGN KEY (project_id) REFERENCES project(id) ON DELETE CASCADE,  -- 外键关联到项目表
+    FOREIGN KEY (user_id) REFERENCES user(id) ON DELETE CASCADE                -- 外键关联到用户表
+);
+
+CREATE TABLE Fileing (
+    id INT AUTO_INCREMENT PRIMARY KEY,                -- Fileing 表的主键
+    user_id INT NOT NULL,                              -- 用户的外键
+    file_id INT NOT NULL,                              -- 文件的外键
+    ing_at DATETIME DEFAULT CURRENT_TIMESTAMP,    -- 当前时间，默认为当前时间
+    UNIQUE (user_id, file_id),                        -- 确保每个用户与文件的关联是唯一的
+    FOREIGN KEY (user_id) REFERENCES User(id) ON DELETE CASCADE,  -- 外键约束，关联到 User 表的 id 字段
+    FOREIGN KEY (file_id) REFERENCES File(id) ON DELETE CASCADE   -- 外键约束，关联到 File 表的 id 字段
+);
